@@ -453,9 +453,9 @@
                         <td><code>"claude-sonnet-4-20250514"</code></td>
                     </tr>
                     <tr>
-                        <td><code>options.auto_approve</code></td>
-                        <td>自動承認</td>
-                        <td><code>true</code> または <code>false</code></td>
+                        <td><code>options.auto_level</code></td>
+                        <td>自動承認レベル（low, medium, high）</td>
+                        <td><code>"low"</code>, <code>"medium"</code>, <code>"high"</code></td>
                     </tr>
                     <tr>
                         <td><code>options.log_directory</code></td>
@@ -475,7 +475,7 @@
             "config.json"
         ],
         "model": "claude-sonnet-4-20250514",
-        "auto_approve": false,
+        "auto_level": "medium",
         "log_directory": "logs"
     }
 }</code></pre>
@@ -516,7 +516,7 @@
 
                 <div class="card">
                     <h4>コード作成</h4>
-                    <pre><code>droid --prompt "Pythonで簡単なTODOリストアプリを作成して" --auto-approve</code></pre>
+                    <pre><code>droid --prompt "Pythonで簡単なTODOリストアプリを作成して" --auto medium</code></pre>
                 </div>
 
                 <div class="card">

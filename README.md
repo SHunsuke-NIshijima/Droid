@@ -41,7 +41,7 @@ run-droid.bat
 | `options.working_directory` | 作業ディレクトリ（相対パスまたは絶対パス） | `"."` または `"C:/projects/myapp"` |
 | `options.reference_paths` | 参照ファイル/フォルダパスの配列 | `["src/main.py", "docs/"]` |
 | `options.model` | 使用するAIモデル | `"claude-sonnet-4-20250514"`, `"claude-opus-4-20250514"` |
-| `options.auto_approve` | ファイル変更を自動承認するか | `true` または `false` |
+| `options.auto_level` | 自動承認レベル（low, medium, high） | `"low"`, `"medium"`, `"high"` |
 | `options.log_directory` | ログ出力先ディレクトリ | `"logs"` または `"C:/logs/droid"` |
 
 ### prompt.jsonの完全な例
@@ -57,7 +57,7 @@ run-droid.bat
             "config.json"
         ],
         "model": "claude-sonnet-4-20250514",
-        "auto_approve": false,
+        "auto_level": "medium",
         "log_directory": "logs"
     }
 }
