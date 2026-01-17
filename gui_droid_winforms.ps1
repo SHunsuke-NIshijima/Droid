@@ -1,4 +1,4 @@
-# DROID Desktop GUI (PowerShell Windows Forms版)
+﻿# DROID Desktop GUI (PowerShell Windows Forms版)
 # Windows標準のWindows Formsを使用したGUIアプリケーション
 
 # 文字エンコーディング設定（日本語対応）
@@ -500,7 +500,7 @@ $btnExecute.Add_Click({
         }
     }
     catch {
-        $txtStatus.AppendText("`r`n実行エラー: $($_.Exception.Message)")
+        $txtStatus.Text += "実行エラー: $($_.Exception.Message)"
         [System.Windows.Forms.MessageBox]::Show("実行中にエラーが発生しました:`r`n$($_.Exception.Message)", "エラー", "OK", "Error")
     }
     finally {
