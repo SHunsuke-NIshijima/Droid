@@ -231,13 +231,9 @@ class DroidGUI:
             self.update_status(f"設定の読み込みに失敗しました: {str(e)}")
             messagebox.showerror("エラー", f"設定の読み込みに失敗しました:\n{str(e)}")
     
-    def save_settings(self):
-        """設定をprompt.jsonに保存"""
+    def save_settings_internal(self):
+        """設定をprompt.jsonに保存（内部用、メッセージボックスなし）"""
         prompt = self.prompt_text.get(1.0, tk.END).strip()
-        
-        if not prompt:
-            messagebox.showwarning("警告", "プロンプトを入力してください。")
-            return
         
         # 参照パスを取得
         ref_paths = []
@@ -259,10 +255,19 @@ class DroidGUI:
         if ref_paths:
             data["options"]["ref_filepath"] = ref_paths
         
+        with open(self.prompt_file, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+    
+    def save_settings(self):
+        """設定をprompt.jsonに保存"""
+        prompt = self.prompt_text.get(1.0, tk.END).strip()
+        
+        if not prompt:
+            messagebox.showwarning("警告", "プロンプトを入力してください。")
+            return
+        
         try:
-            with open(self.prompt_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
-            
+            self.save_settings_internal()
             self.update_status("設定を保存しました。")
             messagebox.showinfo("成功", "設定をprompt.jsonに保存しました。")
         except Exception as e:
@@ -280,8 +285,9 @@ class DroidGUI:
             messagebox.showwarning("警告", "プロンプトを入力してください。")
             return
         
-        # まず設定を保存
-        self.save_settings()
+        # まず設定を保存（ユーザーに確認）
+        self.update_status("設定を保存しています...")
+        self.save_settings_internal()  # 内部的な保存（メッセージボックスなし）
         
         # ボタンを無効化
         self.is_running = True
@@ -298,6 +304,14 @@ class DroidGUI:
         """DROIDを実行（スレッド内）"""
         try:
             self.update_status("DROIDを実行中...")
+            
+            # PowerShellスクリプトの存在を確認（セキュリティ対策）
+            if not self.ps_script.exists():
+                raise FileNotFoundError(f"PowerShellスクリプトが見つかりません: {self.ps_script}")
+            
+            # スクリプトが期待されるディレクトリ内にあることを確認
+            if not self.ps_script.parent.samefile(self.script_dir):
+                raise ValueError("PowerShellスクリプトが不正なディレクトリにあります")
             
             # PowerShellスクリプトを実行
             cmd = [
