@@ -18,6 +18,7 @@ run-droid.bat
 - ✅ ファイル/フォルダの参照が簡単
 - ✅ AGENTS.mdファイルの指定が可能
 - ✅ 実行状態のリアルタイム表示
+- ✅ **実行進捗のリアルタイム表示（NEW!）**
 
 ### 必須環境
 - Windows PowerShell（Windows標準搭載）
