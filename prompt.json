@@ -1,5 +1,5 @@
 {
-    "prompt": "columns_output.xlsxに追加列としてinput_data,xlsxの各列のユニーク値の数を追加してください。",
+    "prompt": "columns_output.xlsxに追加列としてinput_data,xlsxの各列のユニーク値の数を追加お願いします。",
     "options": {
         "working_directory": ".",
         "model": "claude-opus-4-5-20251101",
