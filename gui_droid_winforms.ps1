@@ -446,9 +446,6 @@ $btnExecute.Add_Click({
     $form.Refresh()
     
     try {
-        # 一時ファイルを作成して出力をキャプチャ
-        $tempOutputFile = [System.IO.Path]::GetTempFileName()
-        
         # PowerShellスクリプトを実行（出力をリダイレクト）
         $processInfo = New-Object System.Diagnostics.ProcessStartInfo
         $processInfo.FileName = "powershell.exe"
@@ -475,7 +472,7 @@ $btnExecute.Add_Click({
             }
         }
         
-        Register-ObjectEvent -InputObject $process -EventName OutputDataReceived -Action $outputHandler | Out-Null
+        $eventSubscription = Register-ObjectEvent -InputObject $process -EventName OutputDataReceived -Action $outputHandler
         
         # プロセスを開始
         $process.Start() | Out-Null
@@ -485,7 +482,9 @@ $btnExecute.Add_Click({
         $process.WaitForExit()
         
         # イベントハンドラーをクリーンアップ
-        Get-EventSubscriber | Where-Object { $_.SourceObject -eq $process } | Unregister-Event
+        if ($eventSubscription) {
+            Unregister-Event -SourceIdentifier $eventSubscription.Name
+        }
         
         # エラー出力を取得
         $stderr = $process.StandardError.ReadToEnd()
@@ -498,11 +497,6 @@ $btnExecute.Add_Click({
             $errorMsg = if ([string]::IsNullOrWhiteSpace($stderr)) { "実行が失敗しました (終了コード: $($process.ExitCode))" } else { $stderr }
             $txtStatus.AppendText("`r`nエラー: $errorMsg")
             [System.Windows.Forms.MessageBox]::Show("DROIDの実行に失敗しました。`r`n$errorMsg", "エラー", "OK", "Error")
-        }
-        
-        # 一時ファイルを削除
-        if (Test-Path $tempOutputFile) {
-            Remove-Item $tempOutputFile -Force -ErrorAction SilentlyContinue
         }
     }
     catch {
