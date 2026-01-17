@@ -1,9 +1,0 @@
-name: Droid Execution Desktop GUI Application Project
-risk_level: high
-default_droid: planner
-auto_policy: low
-review_required: true
-allowed_paths:
-  - src/
-  - tests/
-  - README.md
