@@ -1,13 +1,13 @@
 {
-    "prompt": "columns_output.xlsxに追加列としてinput_data.xlsxの各列のユニーク値の数を追加お願いします。",
+    "prompt": "columns_output.xlsxに追加列としてinput_data,xlsxの各列のユニーク値の数を追加してください。",
     "options": {
         "working_directory": ".",
         "model": "claude-opus-4-5-20251101",
         "auto_level": "high",
         "log_directory": "logs",
-        "reference_paths": [
-            "./sample/input_data.xlsx",
-            "./sample/columns_output.xlsx"
+        "ref_filepath": [
+            ".\\sample\\input_data.xlsx",
+            ".\\sample\\columns_output.xlsx"
         ]
     }
 }
