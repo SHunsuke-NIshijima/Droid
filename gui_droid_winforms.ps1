@@ -1,6 +1,11 @@
 # DROID Desktop GUI (PowerShell Windows Forms版)
 # Windows標準のWindows Formsを使用したGUIアプリケーション
 
+# 文字エンコーディング設定（日本語対応）
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+[System.Console]::InputEncoding = [System.Text.Encoding]::UTF8
+
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
@@ -303,7 +308,9 @@ $btnRemove.Add_Click({
 function Load-Settings {
     if (Test-Path $PromptFile) {
         try {
-            $data = Get-Content -Path $PromptFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            # UTF-8エンコーディングで読み込み（BOM有無に対応）
+            $jsonContent = [System.IO.File]::ReadAllText($PromptFile, [System.Text.Encoding]::UTF8)
+            $data = $jsonContent | ConvertFrom-Json
             
             $txtPrompt.Text = $data.prompt
             
@@ -383,7 +390,9 @@ function Save-Settings {
     
     try {
         $json = $data | ConvertTo-Json -Depth 10
-        $json | Out-File -FilePath $PromptFile -Encoding UTF8
+        # UTF-8 without BOMで保存（日本語文字化け対策）
+        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+        [System.IO.File]::WriteAllText($PromptFile, $json, $utf8NoBom)
         $txtStatus.Text = "設定を保存しました。"
         return $true
     }
