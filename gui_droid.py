@@ -132,11 +132,11 @@ class DroidGUI:
         ttk.Button(ref_btn_frame, text="削除", command=self.remove_ref).grid(row=2, column=0, pady=2)
         
         # === ステータス表示エリア ===
-        status_frame = ttk.LabelFrame(scrollable_frame, text="ステータス", padding="5")
+        status_frame = ttk.LabelFrame(scrollable_frame, text="実行進捗・ステータス", padding="5")
         status_frame.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
         status_frame.columnconfigure(0, weight=1)
         
-        self.status_text = scrolledtext.ScrolledText(status_frame, height=4, width=70, wrap=tk.WORD, state=tk.DISABLED)
+        self.status_text = scrolledtext.ScrolledText(status_frame, height=10, width=70, wrap=tk.WORD, state=tk.DISABLED)
         self.status_text.grid(row=0, column=0, sticky=(tk.W, tk.E))
         
         # === ボタンエリア ===
@@ -328,27 +328,37 @@ class DroidGUI:
                 stderr=subprocess.PIPE,
                 text=True,
                 encoding='utf-8',
-                errors='replace'
+                errors='replace',
+                bufsize=1
             )
             
-            stdout, stderr = process.communicate()
+            # リアルタイムで出力を読み取る
+            while True:
+                line = process.stdout.readline()
+                if not line:
+                    break
+                line = line.rstrip()
+                if line:
+                    # ステータス表示を更新
+                    self.update_status(line, append=True)
+            
+            # プロセスの終了を待つ
+            process.wait()
+            
+            # エラー出力を確認
+            stderr_output = process.stderr.read()
             
             if process.returncode == 0:
-                self.update_status("実行完了しました。", append=True)
-                if stdout:
-                    # ログファイルのパスを抽出して表示
-                    for line in stdout.split('\n'):
-                        if 'ログファイル:' in line or 'ログ保存先:' in line:
-                            self.update_status(line.strip(), append=True)
+                self.update_status("\n実行完了しました。", append=True)
                 self.root.after(0, lambda: messagebox.showinfo("完了", "DROIDの実行が完了しました。"))
             else:
-                error_msg = stderr if stderr else "不明なエラー"
-                self.update_status(f"エラー: {error_msg}", append=True)
-                self.root.after(0, lambda: messagebox.showerror("エラー", f"DROIDの実行に失敗しました:\n{error_msg}"))
+                error_msg = stderr_output if stderr_output else "不明なエラー"
+                self.update_status(f"\nエラー: {error_msg}", append=True)
+                self.root.after(0, lambda msg=error_msg: messagebox.showerror("エラー", f"DROIDの実行に失敗しました:\n{msg}"))
         
         except Exception as e:
-            self.update_status(f"実行エラー: {str(e)}", append=True)
-            self.root.after(0, lambda: messagebox.showerror("エラー", f"実行中にエラーが発生しました:\n{str(e)}"))
+            self.update_status(f"\n実行エラー: {str(e)}", append=True)
+            self.root.after(0, lambda err=str(e): messagebox.showerror("エラー", f"実行中にエラーが発生しました:\n{err}"))
         
         finally:
             # ボタンを有効化

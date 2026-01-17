@@ -17,9 +17,9 @@ $PSScript = Join-Path $ScriptDir "invoke-droid.ps1"
 # フォームの作成
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "DROID Desktop GUI"
-$form.Size = New-Object System.Drawing.Size(850, 750)
+$form.Size = New-Object System.Drawing.Size(850, 810)
 $form.StartPosition = "CenterScreen"
-$form.MinimumSize = New-Object System.Drawing.Size(850, 750)
+$form.MinimumSize = New-Object System.Drawing.Size(850, 810)
 
 # フォントの設定
 $defaultFont = New-Object System.Drawing.Font("MS UI Gothic", 9)
@@ -202,14 +202,14 @@ $yPos += 190
 # === ステータス表示エリア ===
 $grpStatus = New-Object System.Windows.Forms.GroupBox
 $grpStatus.Location = New-Object System.Drawing.Point(10, $yPos)
-$grpStatus.Size = New-Object System.Drawing.Size(810, 90)
-$grpStatus.Text = "ステータス"
+$grpStatus.Size = New-Object System.Drawing.Size(810, 150)
+$grpStatus.Text = "実行進捗・ステータス"
 $grpStatus.Font = $defaultFont
 $form.Controls.Add($grpStatus)
 
 $txtStatus = New-Object System.Windows.Forms.TextBox
 $txtStatus.Location = New-Object System.Drawing.Point(10, 20)
-$txtStatus.Size = New-Object System.Drawing.Size(785, 60)
+$txtStatus.Size = New-Object System.Drawing.Size(785, 120)
 $txtStatus.Multiline = $true
 $txtStatus.ScrollBars = "Vertical"
 $txtStatus.ReadOnly = $true
@@ -217,7 +217,7 @@ $txtStatus.Font = $defaultFont
 $txtStatus.Text = "待機中"
 $grpStatus.Controls.Add($txtStatus)
 
-$yPos += 100
+$yPos += 160
 
 # === ボタンエリア ===
 $btnReload = New-Object System.Windows.Forms.Button
@@ -446,25 +446,67 @@ $btnExecute.Add_Click({
     $form.Refresh()
     
     try {
-        # PowerShellスクリプトを実行
-        $process = Start-Process -FilePath "powershell.exe" `
-            -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$PSScript`"" `
-            -WorkingDirectory $ScriptDir `
-            -Wait `
-            -PassThru `
-            -WindowStyle Normal
+        # 一時ファイルを作成して出力をキャプチャ
+        $tempOutputFile = [System.IO.Path]::GetTempFileName()
+        
+        # PowerShellスクリプトを実行（出力をリダイレクト）
+        $processInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $processInfo.FileName = "powershell.exe"
+        $processInfo.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$PSScript`""
+        $processInfo.WorkingDirectory = $ScriptDir
+        $processInfo.RedirectStandardOutput = $true
+        $processInfo.RedirectStandardError = $true
+        $processInfo.UseShellExecute = $false
+        $processInfo.CreateNoWindow = $false
+        $processInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8
+        
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo = $processInfo
+        
+        # 出力イベントハンドラーを追加（リアルタイム表示）
+        $outputHandler = {
+            param($sender, $e)
+            if (-not [string]::IsNullOrEmpty($e.Data)) {
+                $txtStatus.Invoke([Action]{
+                    $txtStatus.AppendText($e.Data + "`r`n")
+                    $txtStatus.SelectionStart = $txtStatus.Text.Length
+                    $txtStatus.ScrollToCaret()
+                })
+            }
+        }
+        
+        Register-ObjectEvent -InputObject $process -EventName OutputDataReceived -Action $outputHandler | Out-Null
+        
+        # プロセスを開始
+        $process.Start() | Out-Null
+        $process.BeginOutputReadLine()
+        
+        # プロセスの終了を待つ
+        $process.WaitForExit()
+        
+        # イベントハンドラーをクリーンアップ
+        Get-EventSubscriber | Where-Object { $_.SourceObject -eq $process } | Unregister-Event
+        
+        # エラー出力を取得
+        $stderr = $process.StandardError.ReadToEnd()
         
         if ($process.ExitCode -eq 0) {
-            $txtStatus.Text += "実行完了しました。"
+            $txtStatus.AppendText("`r`n実行完了しました。")
             [System.Windows.Forms.MessageBox]::Show("DROIDの実行が完了しました。", "完了", "OK", "Information")
         }
         else {
-            $txtStatus.Text += "エラー: 実行が失敗しました (終了コード: $($process.ExitCode))"
-            [System.Windows.Forms.MessageBox]::Show("DROIDの実行に失敗しました。`r`n終了コード: $($process.ExitCode)", "エラー", "OK", "Error")
+            $errorMsg = if ([string]::IsNullOrWhiteSpace($stderr)) { "実行が失敗しました (終了コード: $($process.ExitCode))" } else { $stderr }
+            $txtStatus.AppendText("`r`nエラー: $errorMsg")
+            [System.Windows.Forms.MessageBox]::Show("DROIDの実行に失敗しました。`r`n$errorMsg", "エラー", "OK", "Error")
+        }
+        
+        # 一時ファイルを削除
+        if (Test-Path $tempOutputFile) {
+            Remove-Item $tempOutputFile -Force -ErrorAction SilentlyContinue
         }
     }
     catch {
-        $txtStatus.Text += "実行エラー: $($_.Exception.Message)"
+        $txtStatus.AppendText("`r`n実行エラー: $($_.Exception.Message)")
         [System.Windows.Forms.MessageBox]::Show("実行中にエラーが発生しました:`r`n$($_.Exception.Message)", "エラー", "OK", "Error")
     }
     finally {
