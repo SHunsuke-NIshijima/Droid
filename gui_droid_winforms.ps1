@@ -500,7 +500,7 @@ $btnExecute.Add_Click({
         }
     }
     catch {
-        $txtStatus.Text += "実行エラー: $($_.Exception.Message)"
+        $txtStatus.AppendText("`r`n実行エラー: $($_.Exception.Message)")
         [System.Windows.Forms.MessageBox]::Show("実行中にエラーが発生しました:`r`n$($_.Exception.Message)", "エラー", "OK", "Error")
     }
     finally {
