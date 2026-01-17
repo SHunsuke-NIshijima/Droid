@@ -1,0 +1,58 @@
+{
+  "model": "claude-sonnet-4.5",
+  "reasoningEffort": "medium",
+  "autonomyLevel": "default",
+  "diffMode": "unified",
+  "cloudSessionSync": true,
+  "soundNotifications": false,
+  
+  "commandAllowlist": [
+    "git",
+    "npm",
+    "python",
+    "pytest",
+    "powershell",
+    "pwsh",
+    "cmd",
+    "dir",
+    "ls",
+    "cat",
+    "type",
+    "echo",
+    "mkdir",
+    "touch"
+  ],
+  
+  "commandDenylist": [
+    "rm -rf /",
+    "del /f /s /q",
+    "format",
+    "shutdown",
+    "reboot",
+    "diskpart"
+  ],
+  
+  "preferredLanguage": "ja",
+  
+  "codeReview": {
+    "autoReview": false,
+    "checkSecurity": true,
+    "checkPerformance": true,
+    "checkTestCoverage": true
+  },
+  
+  "testing": {
+    "autoRunTests": false,
+    "testFramework": "pytest",
+    "coverageThreshold": 80
+  },
+  
+  "git": {
+    "autoCommit": false,
+    "commitMessagePrefix": "",
+    "requireCoAuthors": true,
+    "coAuthors": [
+      "factory-droid[bot] <138933559+factory-droid[bot]@users.noreply.github.com>"
+    ]
+  }
+}
