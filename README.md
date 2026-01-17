@@ -1,20 +1,53 @@
-# PowerShellからDROIDを呼び出す
+# DROID Desktop GUI & PowerShell Tools
 
-Factory.aiのDROIDをPowerShell経由で呼び出すためのツールです。
+Factory.aiのDROIDを簡単に使用するためのツール集です。
+
+## 🎨 Desktop GUI（推奨）
+
+**Windows標準のPowerShell Windows Forms GUI**
+
+### 起動方法
+```cmd
+run-droid.bat
+```
+
+### 特徴
+- ✅ Windows標準搭載のコンポーネントを使用
+- ✅ グラフィカルな操作画面
+- ✅ プロンプトとパラメータを直感的に入力
+- ✅ ファイル/フォルダの参照が簡単
+- ✅ AGENTS.mdファイルの指定が可能
+- ✅ 実行状態のリアルタイム表示
+
+### 必須環境
+- Windows PowerShell（Windows標準搭載）
+- Factory.ai DROID
+
+### 詳細
+詳しい使い方は [GUI使用方法.md](docs/GUI使用方法.md) をご覧ください。
+
+## 📝 PowerShell/JSON方式（従来方式）
+
+**JSONファイルを編集してコマンドラインから実行**
 
 ## ファイル構成
 
 ```
-PowerShell/
-├── run-droid.bat      # 実行用バッチファイル
-├── invoke-droid.ps1   # PowerShellスクリプト
-├── prompt.json        # プロンプト設定ファイル
-└── README.md          # このファイル
+Droid/
+├── run-droid.bat              # GUI起動用バッチファイル
+├── gui_droid_winforms.ps1     # Windows Forms GUIアプリケーション
+├── gui_droid.py               # Python版GUI（レガシー）
+├── invoke-droid.ps1           # PowerShellスクリプト
+├── prompt.json                # プロンプト設定ファイル
+├── docs/
+│   ├── GUI使用方法.md        # GUI使用ガイド
+│   └── GUI仕様書.md          # GUI仕様書
+└── README.md                  # このファイル
 ```
 
-## 使い方
+## 使い方（PowerShell/JSON方式）
 
-### 1. prompt.jsonにプロンプトを記述
+### 1. prompt.jsonにプロンプトを記述（JSON方式の場合）
 
 ```json
 {
@@ -25,12 +58,12 @@ PowerShell/
 }
 ```
 
-### 2. run-droid.batを実行
+### 2. PowerShellから直接実行（JSON方式の場合）
 
-バッチファイルをダブルクリックするか、コマンドラインから実行します。
+JSONを編集後、PowerShellから直接実行する場合：
 
 ```cmd
-run-droid.bat
+powershell -NoProfile -ExecutionPolicy Bypass -File invoke-droid.ps1
 ```
 
 ## prompt.jsonの設定
