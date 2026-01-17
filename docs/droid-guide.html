@@ -239,10 +239,6 @@
                         <td>参照ファイル/フォルダパス</td>
                     </tr>
                     <tr>
-                        <td><code>--auto</code></td>
-                        <td>自動化レベル（low, medium, high）を指定</td>
-                    </tr>
-                    <tr>
                         <td><code>--auto-approve</code></td>
                         <td>ファイル変更を自動承認</td>
                     </tr>
@@ -457,9 +453,9 @@
                         <td><code>"claude-sonnet-4-20250514"</code></td>
                     </tr>
                     <tr>
-                        <td><code>options.auto_level</code></td>
-                        <td>自動承認レベル（low, medium, high）</td>
-                        <td><code>"low"</code>, <code>"medium"</code>, <code>"high"</code></td>
+                        <td><code>options.auto_approve</code></td>
+                        <td>自動承認</td>
+                        <td><code>true</code> または <code>false</code></td>
                     </tr>
                     <tr>
                         <td><code>options.log_directory</code></td>
@@ -479,7 +475,7 @@
             "config.json"
         ],
         "model": "claude-sonnet-4-20250514",
-        "auto_level": "medium",
+        "auto_approve": false,
         "log_directory": "logs"
     }
 }</code></pre>
@@ -520,7 +516,7 @@
 
                 <div class="card">
                     <h4>コード作成</h4>
-                    <pre><code>droid --prompt "Pythonで簡単なTODOリストアプリを作成して" --auto medium</code></pre>
+                    <pre><code>droid --prompt "Pythonで簡単なTODOリストアプリを作成して" --auto-approve</code></pre>
                 </div>
 
                 <div class="card">

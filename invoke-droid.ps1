@@ -74,19 +74,6 @@ if (-not [string]::IsNullOrWhiteSpace($PromptData.options.auto_level)) {
     $DroidArgs += $PromptData.options.auto_level
 }
 
-# 参照パスの指定
-if ($PromptData.options.reference_paths -and $PromptData.options.reference_paths.Count -gt 0) {
-    $DroidArgs += "--reference-paths"
-    foreach ($path in $PromptData.options.reference_paths) {
-        # 相対パスの場合は絶対パスに変換
-        $resolvedPath = $path
-        if (-not [System.IO.Path]::IsPathRooted($path)) {
-            $resolvedPath = Join-Path $WorkDir $path
-        }
-        $DroidArgs += "`"$resolvedPath`""
-    }
-}
-
 # 作業ディレクトリの指定
 $DroidArgs += "--cwd"
 $DroidArgs += "`"$WorkDir`""
