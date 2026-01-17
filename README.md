@@ -4,7 +4,7 @@ Factory.aiのDROIDを簡単に使用するためのツール集です。
 
 ## 🎨 Desktop GUI（推奨）
 
-**Python製の使いやすいGUIアプリケーション**
+**Windows標準のPowerShell Windows Forms GUI**
 
 ### 起動方法
 ```cmd
@@ -12,13 +12,15 @@ run-droid.bat
 ```
 
 ### 特徴
+- ✅ Windows標準搭載のコンポーネントを使用
 - ✅ グラフィカルな操作画面
 - ✅ プロンプトとパラメータを直感的に入力
 - ✅ ファイル/フォルダの参照が簡単
+- ✅ AGENTS.mdファイルの指定が可能
 - ✅ 実行状態のリアルタイム表示
 
 ### 必須環境
-- Python 3.8以上
+- Windows PowerShell（Windows標準搭載）
 - Factory.ai DROID
 
 ### 詳細
@@ -32,14 +34,15 @@ run-droid.bat
 
 ```
 Droid/
-├── run-droid.bat         # GUI起動用バッチファイル
-├── gui_droid.py          # Desktop GUIアプリケーション
-├── invoke-droid.ps1      # PowerShellスクリプト
-├── prompt.json           # プロンプト設定ファイル
+├── run-droid.bat              # GUI起動用バッチファイル
+├── gui_droid_winforms.ps1     # Windows Forms GUIアプリケーション
+├── gui_droid.py               # Python版GUI（レガシー）
+├── invoke-droid.ps1           # PowerShellスクリプト
+├── prompt.json                # プロンプト設定ファイル
 ├── docs/
-│   ├── GUI使用方法.md   # GUI使用ガイド
-│   └── GUI仕様書.md     # GUI仕様書
-└── README.md             # このファイル
+│   ├── GUI使用方法.md        # GUI使用ガイド
+│   └── GUI仕様書.md          # GUI仕様書
+└── README.md                  # このファイル
 ```
 
 ## 使い方（PowerShell/JSON方式）
