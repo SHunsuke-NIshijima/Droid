@@ -109,6 +109,18 @@ class TestPowerShellIntegration(unittest.TestCase):
             # 重要な要素が含まれているか確認
             self.assertIn("prompt.json", content)
             self.assertIn("droid", content.lower())
+    
+    def test_powershell_script_has_stream_json(self):
+        """invoke-droid.ps1にstream-jsonパラメータが含まれているかテスト"""
+        ps_file = Path(__file__).parent.parent / "invoke-droid.ps1"
+        
+        if ps_file.exists():
+            with open(ps_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # リアルタイム進捗表示のためのstream-json形式が含まれているか確認
+            self.assertIn("--output-format", content)
+            self.assertIn("stream-json", content)
 
 
 class TestDocumentationIntegration(unittest.TestCase):
