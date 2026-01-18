@@ -74,6 +74,10 @@ if (-not [string]::IsNullOrWhiteSpace($PromptData.options.auto_level)) {
     $DroidArgs += $PromptData.options.auto_level
 }
 
+# リアルタイム進捗表示のためstream-json形式を使用
+$DroidArgs += "--output-format"
+$DroidArgs += "stream-json"
+
 # 作業ディレクトリの指定
 $DroidArgs += "--cwd"
 $DroidArgs += "`"$WorkDir`""
