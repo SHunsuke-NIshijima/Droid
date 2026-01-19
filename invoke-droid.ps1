@@ -100,17 +100,28 @@ $LogHeader += "`r`nプロンプト: $Prompt"
 $LogHeader += "`r`n作業ディレクトリ: $WorkDir"
 $LogHeader += "`r`nモデル: $($PromptData.options.model)"
 $LogHeader += "`r`n================================================================================`r`n"
-$LogHeader | Out-File -FilePath $LogFile -Encoding UTF8
+[System.IO.File]::WriteAllText($LogFile, $LogHeader, [System.Text.UTF8Encoding]::new($false))
 
 # DROIDを呼び出し
 try {
     Push-Location $WorkDir
-    Invoke-Expression $DroidCommand | Tee-Object -FilePath $LogFile -Append
+    
+    # 出力をキャプチャしながらコンソールにも表示
+    $output = Invoke-Expression $DroidCommand 2>&1 | ForEach-Object {
+        Write-Host $_
+        $_
+    }
+    
+    # 出力をログファイルに追記（UTF-8 without BOM）
+    if ($output) {
+        $outputText = ($output | Out-String)
+        [System.IO.File]::AppendAllText($LogFile, $outputText, [System.Text.UTF8Encoding]::new($false))
+    }
     
     $LogFooter = "`r`n================================================================================"
     $LogFooter += "`r`n実行完了: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     $LogFooter += "`r`n================================================================================"
-    $LogFooter | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    [System.IO.File]::AppendAllText($LogFile, $LogFooter, [System.Text.UTF8Encoding]::new($false))
     
     Write-Host ""
     Write-Host "=== 実行完了 ===" -ForegroundColor Green
@@ -119,7 +130,7 @@ try {
 catch {
     $ErrorMsg = "DROIDの呼び出しに失敗しました: $_"
     Write-Error $ErrorMsg
-    "ERROR: $ErrorMsg" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    [System.IO.File]::AppendAllText($LogFile, "ERROR: $ErrorMsg`r`n", [System.Text.UTF8Encoding]::new($false))
     exit 1
 }
 finally {
