@@ -106,22 +106,27 @@ $LogHeader += "`r`n=============================================================
 try {
     Push-Location $WorkDir
     
-    # 出力をキャプチャしながらコンソールにも表示
-    $output = Invoke-Expression $DroidCommand 2>&1 | ForEach-Object {
-        Write-Host $_
-        $_
-    }
+    # UTF-8エンコーディング（BOMなし）でStreamWriterを作成
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    $logStream = [System.IO.StreamWriter]::new($LogFile, $true, $utf8NoBom)
     
-    # 出力をログファイルに追記（UTF-8 without BOM）
-    if ($output) {
-        $outputText = ($output | Out-String)
-        [System.IO.File]::AppendAllText($LogFile, $outputText, [System.Text.UTF8Encoding]::new($false))
+    try {
+        # 出力をストリーミング処理しながらコンソールとログファイルに書き込み
+        Invoke-Expression $DroidCommand 2>&1 | ForEach-Object {
+            $line = $_.ToString()
+            Write-Host $line
+            $logStream.WriteLine($line)
+        }
+    }
+    finally {
+        # StreamWriterを確実に閉じる
+        $logStream.Close()
     }
     
     $LogFooter = "`r`n================================================================================"
     $LogFooter += "`r`n実行完了: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     $LogFooter += "`r`n================================================================================"
-    [System.IO.File]::AppendAllText($LogFile, $LogFooter, [System.Text.UTF8Encoding]::new($false))
+    [System.IO.File]::AppendAllText($LogFile, $LogFooter, $utf8NoBom)
     
     Write-Host ""
     Write-Host "=== 実行完了 ===" -ForegroundColor Green
