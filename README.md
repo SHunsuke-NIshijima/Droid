@@ -1,12 +1,12 @@
 # DROID Desktop GUI & PowerShell Tools
 
-[Factory.ai](https://www.factory.ai/)の[DROID](https://www.factory.ai/droid)を簡単に使用するためのツール集です。
+[Factory.ai](https://www.factory.ai/)の[DROID](https://www.factory.ai/droid)を簡単に使用するためのWindows Desktop GUIツールです。
 
-## 🎨 Desktop GUI（推奨）
+## Desktop GUI（推奨）
 
 **Windows標準のPowerShell Windows Forms GUI**
 
-![DROID Desktop GUI](docs/images/gui_screenshot.png)
+![DROID Desktop GUI](docs/Desktop_GUI_Image.png)
 
 ### 起動方法
 ```cmd
@@ -29,7 +29,7 @@ run-droid.bat
 ### 詳細
 詳しい使い方は [GUI使用方法.md](docs/GUI使用方法.md) をご覧ください。
 
-## 📝 PowerShell/JSON方式（従来方式）
+## PowerShell/JSON方式（従来方式）
 
 **JSONフ��イルを編集してコマンドラインから実行**
 
