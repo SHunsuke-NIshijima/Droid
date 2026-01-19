@@ -1,10 +1,12 @@
 # DROID Desktop GUI & PowerShell Tools
 
-Factory.aiのDROIDを簡単に使用するためのツール集です。
+[Factory.ai](https://www.factory.ai/)の[DROID](https://www.factory.ai/droid)を簡単に使用するためのツール集です。
 
 ## 🎨 Desktop GUI（推奨）
 
 **Windows標準のPowerShell Windows Forms GUI**
+
+![DROID Desktop GUI](docs/images/gui_screenshot.png)
 
 ### 起動方法
 ```cmd
@@ -22,14 +24,14 @@ run-droid.bat
 
 ### 必須環境
 - Windows PowerShell（Windows標準搭載）
-- Factory.ai DROID
+- [Factory.ai DROID](https://www.factory.ai/droid)
 
 ### 詳細
 詳しい使い方は [GUI使用方法.md](docs/GUI使用方法.md) をご覧ください。
 
 ## 📝 PowerShell/JSON方式（従来方式）
 
-**JSONファイルを編集してコマンドラインから実行**
+**JSONフ��イルを編集してコマンドラインから実行**
 
 ## ファイル構成
 
@@ -42,7 +44,8 @@ Droid/
 ├── prompt.json                # プロンプト設定ファイル
 ├── docs/
 │   ├── GUI使用方法.md        # GUI使用ガイド
-│   └── GUI仕様書.md          # GUI仕様書
+│   ├── GUI仕様書.md          # GUI仕様書
+│   └── images/               # 画像ファイル
 └── README.md                  # このファイル
 ```
 
@@ -72,8 +75,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File invoke-droid.ps1
 | プロパティ | 説明 | 例 |
 |-----------|------|-----|
 | `prompt` | DROIDへの指示内容 | `"このコードをレビューして"` |
-| `options.working_directory` | 作業ディレクトリ（相対パスまたは絶対パス） | `"."` または `"C:/projects/myapp"` |
-| `options.reference_paths` | 参照ファイル/フォルダパスの配列 | `["src/main.py", "docs/"]` |
+| `options.working_directory` | 作業ディレクトリ（相対パスまたは���対パス） | `"."` または `"C:/projects/myapp"` |
+| `options.reference_paths` | 参照ファイル/フォルダパスの配列 | `[
+    "src/main.py",
+    "docs/"
+]` |
 | `options.model` | 使用するAIモデル | `"claude-sonnet-4-20250514"`, `"claude-opus-4-20250514"` |
 | `options.auto_approve` | ファイル変更を自動承認するか | `true` または `false` |
 | `options.log_directory` | ログ出力先ディレクトリ | `"logs"` または `"C:/logs/droid"` |
@@ -160,7 +166,7 @@ droid_YYYYMMDD_HHMMSS.log
 
 ## 前提条件
 
-- Factory.aiのDROIDがインストールされていること
+- [Factory.ai](https://www.factory.ai/)の[DROID](https://www.factory.ai/droid)がインストールされていること
 - `droid`コマンドがPATHに通っていること
 
 ## トラブルシューティング
