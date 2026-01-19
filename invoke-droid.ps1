@@ -92,6 +92,7 @@ Write-Host "実行コマンド: $DroidCommand" -ForegroundColor Gray
 Write-Host ""
 
 # ログヘッダーを書き込み
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 $LogHeader = "================================================================================"
 $LogHeader += "`r`nDROID 実行ログ"
 $LogHeader += "`r`n================================================================================"
@@ -100,14 +101,13 @@ $LogHeader += "`r`nプロンプト: $Prompt"
 $LogHeader += "`r`n作業ディレクトリ: $WorkDir"
 $LogHeader += "`r`nモデル: $($PromptData.options.model)"
 $LogHeader += "`r`n================================================================================`r`n"
-[System.IO.File]::WriteAllText($LogFile, $LogHeader, [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllText($LogFile, $LogHeader, $utf8NoBom)
 
 # DROIDを呼び出し
 try {
     Push-Location $WorkDir
     
     # UTF-8エンコーディング（BOMなし）でStreamWriterを作成
-    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
     $logStream = [System.IO.StreamWriter]::new($LogFile, $true, $utf8NoBom)
     
     try {
@@ -119,8 +119,8 @@ try {
         }
     }
     finally {
-        # StreamWriterを確実に閉じる
-        $logStream.Close()
+        # StreamWriterを確実に破棄
+        $logStream.Dispose()
     }
     
     $LogFooter = "`r`n================================================================================"
@@ -135,7 +135,7 @@ try {
 catch {
     $ErrorMsg = "DROIDの呼び出しに失敗しました: $_"
     Write-Error $ErrorMsg
-    [System.IO.File]::AppendAllText($LogFile, "ERROR: $ErrorMsg`r`n", [System.Text.UTF8Encoding]::new($false))
+    [System.IO.File]::AppendAllText($LogFile, "ERROR: $ErrorMsg`r`n", $utf8NoBom)
     exit 1
 }
 finally {
