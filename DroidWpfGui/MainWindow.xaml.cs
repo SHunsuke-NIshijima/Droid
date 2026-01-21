@@ -23,19 +23,32 @@ public partial class MainWindow : Window
         InitializeComponent();
         
         // スクリプトのディレクトリを取得
-        scriptDir = AppDomain.CurrentDomain.BaseDirectory;
-        // 実行ファイルの親ディレクトリを取得（bin/Debug/net8.0-windows の親）
-        var exeDir = new DirectoryInfo(scriptDir);
-        if (exeDir.Parent?.Parent?.Parent != null)
-        {
-            scriptDir = exeDir.Parent.Parent.Parent.FullName;
-        }
+        scriptDir = FindProjectRoot() ?? AppDomain.CurrentDomain.BaseDirectory;
         
         promptFile = Path.Combine(scriptDir, "prompt.json");
         psScript = Path.Combine(scriptDir, "invoke-droid.ps1");
         
         // 初回起動時に設定を読み込み
         LoadSettings();
+    }
+
+    private string? FindProjectRoot()
+    {
+        // 実行ファイルから上位ディレクトリを検索して、invoke-droid.ps1 を含むディレクトリを見つける
+        var currentDir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+        
+        // 最大5階層まで上位を検索
+        for (int i = 0; i < 5 && currentDir != null; i++)
+        {
+            var psScriptPath = Path.Combine(currentDir.FullName, "invoke-droid.ps1");
+            if (File.Exists(psScriptPath))
+            {
+                return currentDir.FullName;
+            }
+            currentDir = currentDir.Parent;
+        }
+        
+        return null;
     }
 
     private void BrowseWorkDir_Click(object sender, RoutedEventArgs e)
@@ -145,28 +158,12 @@ public partial class MainWindow : Window
 
                     if (options.TryGetProperty("model", out var model))
                     {
-                        var modelStr = model.GetString();
-                        for (int i = 0; i < cmbModel.Items.Count; i++)
-                        {
-                            if ((cmbModel.Items[i] as System.Windows.Controls.ComboBoxItem)?.Content?.ToString() == modelStr)
-                            {
-                                cmbModel.SelectedIndex = i;
-                                break;
-                            }
-                        }
+                        SelectComboBoxItem(cmbModel, model.GetString());
                     }
 
                     if (options.TryGetProperty("auto_level", out var autoLevel))
                     {
-                        var levelStr = autoLevel.GetString();
-                        for (int i = 0; i < cmbAutoLevel.Items.Count; i++)
-                        {
-                            if ((cmbAutoLevel.Items[i] as System.Windows.Controls.ComboBoxItem)?.Content?.ToString() == levelStr)
-                            {
-                                cmbAutoLevel.SelectedIndex = i;
-                                break;
-                            }
-                        }
+                        SelectComboBoxItem(cmbAutoLevel, autoLevel.GetString());
                     }
 
                     if (options.TryGetProperty("log_directory", out var logDir))
@@ -204,6 +201,20 @@ public partial class MainWindow : Window
         else
         {
             txtStatus.Text = "prompt.jsonが見つかりません。デフォルト設定を使用します。";
+        }
+    }
+
+    private void SelectComboBoxItem(System.Windows.Controls.ComboBox comboBox, string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return;
+        
+        for (int i = 0; i < comboBox.Items.Count; i++)
+        {
+            if ((comboBox.Items[i] as System.Windows.Controls.ComboBoxItem)?.Content?.ToString() == value)
+            {
+                comboBox.SelectedIndex = i;
+                return;
+            }
         }
     }
 
@@ -322,6 +333,11 @@ public partial class MainWindow : Window
 
             using var process = new Process { StartInfo = processInfo };
             
+            // TaskCompletionSource を使用して非同期で待機
+            var tcs = new TaskCompletionSource<bool>();
+            process.EnableRaisingEvents = true;
+            process.Exited += (s, e) => tcs.TrySetResult(true);
+            
             process.OutputDataReceived += (s, ev) =>
             {
                 if (!string.IsNullOrEmpty(ev.Data))
@@ -337,7 +353,8 @@ public partial class MainWindow : Window
             process.Start();
             process.BeginOutputReadLine();
 
-            await Task.Run(() => process.WaitForExit());
+            // プロセスの終了を非同期で待機
+            await tcs.Task;
 
             var stderr = await process.StandardError.ReadToEndAsync();
 
