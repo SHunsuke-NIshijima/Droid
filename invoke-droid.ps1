@@ -92,6 +92,7 @@ Write-Host "実行コマンド: $DroidCommand" -ForegroundColor Gray
 Write-Host ""
 
 # ログヘッダーを書き込み
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 $LogHeader = "================================================================================"
 $LogHeader += "`r`nDROID 実行ログ"
 $LogHeader += "`r`n================================================================================"
@@ -100,26 +101,82 @@ $LogHeader += "`r`nプロンプト: $Prompt"
 $LogHeader += "`r`n作業ディレクトリ: $WorkDir"
 $LogHeader += "`r`nモデル: $($PromptData.options.model)"
 $LogHeader += "`r`n================================================================================`r`n"
-$LogHeader | Out-File -FilePath $LogFile -Encoding UTF8
+[System.IO.File]::WriteAllText($LogFile, $LogHeader, $utf8NoBom)
+
+# クリーンログ用のヘッダー（読みやすい版）
+$CleanLogFile = $LogFile -replace '\.log$', '_clean.log'
+$CleanLogHeader = "================================================================================"
+$CleanLogHeader += "`r`nDROID 実行ログ（読みやすい版）"
+$CleanLogHeader += "`r`n================================================================================"
+$CleanLogHeader += "`r`n実行日時: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+$CleanLogHeader += "`r`nプロンプト: $Prompt"
+$CleanLogHeader += "`r`n作業ディレクトリ: $WorkDir"
+$CleanLogHeader += "`r`nモデル: $($PromptData.options.model)"
+$CleanLogHeader += "`r`n================================================================================`r`n"
+[System.IO.File]::WriteAllText($CleanLogFile, $CleanLogHeader, $utf8NoBom)
 
 # DROIDを呼び出し
 try {
     Push-Location $WorkDir
-    Invoke-Expression $DroidCommand | Tee-Object -FilePath $LogFile -Append
+    
+    # UTF-8エンコーディング（BOMなし）でStreamWriterを作成
+    $logStream = $null
+    $cleanLogStream = $null
+    
+    try {
+        $logStream = [System.IO.StreamWriter]::new($LogFile, $true, $utf8NoBom)
+        $cleanLogStream = [System.IO.StreamWriter]::new($CleanLogFile, $true, $utf8NoBom)
+        
+        # 出力をストリーミング処理しながらコンソールとログファイルに書き込み
+        Invoke-Expression $DroidCommand 2>&1 | ForEach-Object {
+            $line = $_.ToString()
+            Write-Host $line
+            
+            # 完全なログ（元のまま）
+            $logStream.Write($line + "`r`n")
+            
+            # クリーンなログ（ANSIエスケープシーケンスとstream-jsonフォーマットを除去）
+            # ANSIエスケープコードを除去
+            $cleanLine = $line -replace '\x1b\[[0-9;]*[mGKHJsu]', ''
+            # stream-jsonのタグを除去（<thinking>, <text>, </text>など）
+            $cleanLine = $cleanLine -replace '</?(?:thinking|text|tool_use|function_calls|invoke)(?:\s[^>]*)?>',''
+            # JSONライクな構造を除去
+            if ($cleanLine -match '^\s*[\{\}\[\]]?\s*$' -or $cleanLine -match '^\s*"(?:type|id|name|content|input)":\s*') {
+                # JSONの構造行はスキップ
+                return
+            }
+            # 空行や空白のみの行を除去
+            if ($cleanLine.Trim() -ne '') {
+                $cleanLogStream.Write($cleanLine + "`r`n")
+            }
+        }
+    }
+    finally {
+        # StreamWriterを確実に破棄（null チェック）
+        if ($null -ne $logStream) {
+            $logStream.Dispose()
+        }
+        if ($null -ne $cleanLogStream) {
+            $cleanLogStream.Dispose()
+        }
+    }
     
     $LogFooter = "`r`n================================================================================"
     $LogFooter += "`r`n実行完了: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     $LogFooter += "`r`n================================================================================"
-    $LogFooter | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    [System.IO.File]::AppendAllText($LogFile, $LogFooter, $utf8NoBom)
+    [System.IO.File]::AppendAllText($CleanLogFile, $LogFooter, $utf8NoBom)
     
     Write-Host ""
     Write-Host "=== 実行完了 ===" -ForegroundColor Green
-    Write-Host "ログ保存先: $LogFile" -ForegroundColor Cyan
+    Write-Host "ログ保存先:" -ForegroundColor Cyan
+    Write-Host "  完全版: $LogFile" -ForegroundColor Gray
+    Write-Host "  読みやすい版: $CleanLogFile" -ForegroundColor Green
 }
 catch {
     $ErrorMsg = "DROIDの呼び出しに失敗しました: $_"
     Write-Error $ErrorMsg
-    "ERROR: $ErrorMsg" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    [System.IO.File]::AppendAllText($LogFile, "ERROR: $ErrorMsg`r`n", $utf8NoBom)
     exit 1
 }
 finally {
