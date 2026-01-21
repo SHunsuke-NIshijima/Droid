@@ -2,7 +2,33 @@
 
 [Factory.ai](https://www.factory.ai/)の[DROID](https://www.factory.ai/droid)を簡単に使用するためのWindows Desktop GUIツールです。
 
-## Desktop GUI（推奨）
+## 🎨 WPF版 Desktop GUI（NEW! モダンデザイン）
+
+**ModernWpf を使用したモダンな WPF GUI**
+
+### 起動方法
+```cmd
+run-droid-wpf.bat
+```
+
+### 特徴
+- ✅ **モダンなデザイン**: [ModernWpf](https://github.com/Kinnara/ModernWpf) ライブラリによる現代的なUI
+- ✅ WPF による高度なグラフィカル操作
+- ✅ プロンプトとパラメータを直感的に入力
+- ✅ ファイル/フォルダの参照が簡単
+- ✅ AGENTS.mdファイルの指定が可能
+- ✅ 実行状態のリアルタイム表示
+- ✅ 実行進捗のリアルタイム表示
+
+### 必須環境
+- Windows 10/11
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) 以上
+- [Factory.ai DROID](https://www.factory.ai/droid)
+
+### 詳細
+詳しい使い方は [DroidWpfGui/README.md](DroidWpfGui/README.md) をご覧ください。
+
+## Desktop GUI（Windows Forms版）
 
 **Windows標準のPowerShell Windows Forms GUI**
 
@@ -37,7 +63,13 @@ run-droid.bat
 
 ```
 Droid/
-├── run-droid.bat              # GUI起動用バッチファイル
+├── run-droid-wpf.bat          # WPF GUI起動用バッチファイル（NEW!）
+├── run-droid.bat              # Windows Forms GUI起動用バッチファイル
+├── DroidWpfGui/               # WPF GUIプロジェクト（NEW!）
+│   ├── DroidWpfGui.csproj    # C# プロジェクトファイル
+│   ├── App.xaml              # アプリケーション定義
+│   ├── MainWindow.xaml       # メインウィンドウUI
+│   └── README.md             # WPF GUI詳細ドキュメント
 ├── gui_droid_winforms.ps1     # Windows Forms GUIアプリケーション
 ├── gui_droid.py               # Python版GUI（レガシー）
 ├── invoke-droid.ps1           # PowerShellスクリプト
