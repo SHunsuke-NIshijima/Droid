@@ -77,12 +77,15 @@ if (-not [string]::IsNullOrWhiteSpace($PromptData.options.auto_level)) {
 # MCPサーバーの指定
 if (-not [string]::IsNullOrWhiteSpace($PromptData.options.mcp_server)) {
     $mcpServer = $PromptData.options.mcp_server
-    # 基本的な検証: セミコロンやパイプなどの危険な文字を含まないかチェック
-    if ($mcpServer -match '[;&|<>]') {
-        Write-Warning "MCPサーバーコマンドに危険な文字が含まれています。スキップします。"
+    # 基本的な検証: 危険な文字を含まないかチェック
+    # PowerShellのコマンド置換やインジェクションに使われる文字をブロック
+    if ($mcpServer -match '[;&|<>`$()]') {
+        Write-Host "警告: MCPサーバーコマンドに危険な文字が含まれています。スキップします。" -ForegroundColor Yellow
+        Write-Host "  コマンド: $mcpServer" -ForegroundColor Yellow
     } else {
         $DroidArgs += "--mcp-server"
         $DroidArgs += "`"$mcpServer`""
+        Write-Host "MCPサーバー: $mcpServer" -ForegroundColor Gray
     }
 }
 
