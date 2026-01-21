@@ -173,7 +173,7 @@ $txtMcpServer.Location = New-Object System.Drawing.Point(140, 173)
 $txtMcpServer.Size = New-Object System.Drawing.Size(640, 20)
 $txtMcpServer.Text = ""
 $txtMcpServer.Font = $defaultFont
-$txtMcpServer.PlaceholderText = "例: npx @anthropic/mcp-server-xxx"
+$txtMcpServer.PlaceholderText = "例: npx @anthropic/mcp-server-filesystem"
 $grpOptions.Controls.Add($txtMcpServer)
 
 $yPos += 240

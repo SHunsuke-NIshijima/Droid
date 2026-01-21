@@ -76,8 +76,14 @@ if (-not [string]::IsNullOrWhiteSpace($PromptData.options.auto_level)) {
 
 # MCPサーバーの指定
 if (-not [string]::IsNullOrWhiteSpace($PromptData.options.mcp_server)) {
-    $DroidArgs += "--mcp-server"
-    $DroidArgs += "`"$($PromptData.options.mcp_server)`""
+    $mcpServer = $PromptData.options.mcp_server
+    # 基本的な検証: セミコロンやパイプなどの危険な文字を含まないかチェック
+    if ($mcpServer -match '[;&|<>]') {
+        Write-Warning "MCPサーバーコマンドに危険な文字が含まれています。スキップします。"
+    } else {
+        $DroidArgs += "--mcp-server"
+        $DroidArgs += "`"$mcpServer`""
+    }
 }
 
 # リアルタイム進捗表示のためstream-json形式を使用
