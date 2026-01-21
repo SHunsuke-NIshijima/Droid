@@ -83,6 +83,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File invoke-droid.ps1
 | `options.model` | 使用するAIモデル | `"claude-sonnet-4-20250514"`, `"claude-opus-4-20250514"` |
 | `options.auto_approve` | ファイル変更を自動承認するか | `true` または `false` |
 | `options.log_directory` | ログ出力先ディレクトリ | `"logs"` または `"C:/logs/droid"` |
+| `options.mcp_server` | MCPサーバーコマンド（外部ツール連携） | `"npx @anthropic/mcp-server-filesystem"` |
 
 ### prompt.jsonの完全な例
 
@@ -98,7 +99,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File invoke-droid.ps1
         ],
         "model": "claude-sonnet-4-20250514",
         "auto_approve": false,
-        "log_directory": "logs"
+        "log_directory": "logs",
+        "mcp_server": "npx @anthropic/mcp-server-filesystem"
     }
 }
 ```

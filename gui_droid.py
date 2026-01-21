@@ -108,6 +108,13 @@ class DroidGUI:
         ttk.Entry(options_frame, textvariable=self.log_dir_var).grid(row=row, column=1, sticky=(tk.W, tk.E), padx=5)
         ttk.Button(options_frame, text="参照", command=self.browse_log_dir).grid(row=row, column=2, padx=5)
         
+        # MCPサーバー
+        row += 1
+        ttk.Label(options_frame, text="MCPサーバー:").grid(row=row, column=0, sticky=tk.W, padx=5, pady=3)
+        self.mcp_server_var = tk.StringVar(value="")
+        mcp_entry = ttk.Entry(options_frame, textvariable=self.mcp_server_var)
+        mcp_entry.grid(row=row, column=1, columnspan=2, sticky=(tk.W, tk.E), padx=5)
+        
         # === 参照ファイル/フォルダエリア ===
         ref_frame = ttk.LabelFrame(scrollable_frame, text="参照ファイル/フォルダ", padding="5")
         ref_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
@@ -219,6 +226,7 @@ class DroidGUI:
             self.model_var.set(options.get('model', 'claude-sonnet-4-20250514'))
             self.auto_level_var.set(options.get('auto_level', 'medium'))
             self.log_dir_var.set(options.get('log_directory', 'logs'))
+            self.mcp_server_var.set(options.get('mcp_server', ''))
             
             # 参照ファイル/フォルダを設定
             self.ref_listbox.delete(0, tk.END)
@@ -250,6 +258,10 @@ class DroidGUI:
                 "log_directory": self.log_dir_var.get()
             }
         }
+        
+        # MCPサーバーが指定されている場合のみ追加
+        if self.mcp_server_var.get().strip():
+            data["options"]["mcp_server"] = self.mcp_server_var.get().strip()
         
         # 参照パスがある場合のみ追加
         if ref_paths:
