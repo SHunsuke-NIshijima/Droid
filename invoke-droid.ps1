@@ -74,6 +74,12 @@ if (-not [string]::IsNullOrWhiteSpace($PromptData.options.auto_level)) {
     $DroidArgs += $PromptData.options.auto_level
 }
 
+# MCPサーバーの指定
+if (-not [string]::IsNullOrWhiteSpace($PromptData.options.mcp_server)) {
+    $DroidArgs += "--mcp-server"
+    $DroidArgs += "`"$($PromptData.options.mcp_server)`""
+}
+
 # リアルタイム進捗表示のためstream-json形式を使用
 $DroidArgs += "--output-format"
 $DroidArgs += "stream-json"

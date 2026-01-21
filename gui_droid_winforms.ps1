@@ -50,7 +50,7 @@ $yPos += 130
 # === オプション設定グループ ===
 $grpOptions = New-Object System.Windows.Forms.GroupBox
 $grpOptions.Location = New-Object System.Drawing.Point(10, $yPos)
-$grpOptions.Size = New-Object System.Drawing.Size(810, 200)
+$grpOptions.Size = New-Object System.Drawing.Size(810, 230)
 $grpOptions.Text = "オプション設定"
 $grpOptions.Font = $defaultFont
 $form.Controls.Add($grpOptions)
@@ -160,7 +160,23 @@ $btnBrowseAgentsFile.Text = "参照"
 $btnBrowseAgentsFile.Font = $defaultFont
 $grpOptions.Controls.Add($btnBrowseAgentsFile)
 
-$yPos += 210
+# MCPサーバー
+$lblMcpServer = New-Object System.Windows.Forms.Label
+$lblMcpServer.Location = New-Object System.Drawing.Point(10, 175)
+$lblMcpServer.Size = New-Object System.Drawing.Size(120, 20)
+$lblMcpServer.Text = "MCPサーバー:"
+$lblMcpServer.Font = $defaultFont
+$grpOptions.Controls.Add($lblMcpServer)
+
+$txtMcpServer = New-Object System.Windows.Forms.TextBox
+$txtMcpServer.Location = New-Object System.Drawing.Point(140, 173)
+$txtMcpServer.Size = New-Object System.Drawing.Size(640, 20)
+$txtMcpServer.Text = ""
+$txtMcpServer.Font = $defaultFont
+$txtMcpServer.PlaceholderText = "例: npx @anthropic/mcp-server-xxx"
+$grpOptions.Controls.Add($txtMcpServer)
+
+$yPos += 240
 
 # === 参照ファイル/フォルダグループ ===
 $grpRef = New-Object System.Windows.Forms.GroupBox
@@ -336,6 +352,9 @@ function Load-Settings {
                 if ($data.options.agents_file) {
                     $txtAgentsFile.Text = $data.options.agents_file
                 }
+                if ($data.options.mcp_server) {
+                    $txtMcpServer.Text = $data.options.mcp_server
+                }
                 if ($data.options.ref_filepath) {
                     $lstRef.Items.Clear()
                     foreach ($path in $data.options.ref_filepath) {
@@ -381,6 +400,11 @@ function Save-Settings {
     # AGENTS.mdファイルが指定されている場合のみ追加
     if (-not [string]::IsNullOrWhiteSpace($txtAgentsFile.Text)) {
         $data.options.agents_file = $txtAgentsFile.Text
+    }
+    
+    # MCPサーバーが指定されている場合のみ追加
+    if (-not [string]::IsNullOrWhiteSpace($txtMcpServer.Text)) {
+        $data.options.mcp_server = $txtMcpServer.Text
     }
     
     # 参照パスがある場合のみ追加
