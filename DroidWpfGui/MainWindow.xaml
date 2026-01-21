@@ -1,0 +1,236 @@
+﻿<Window x:Class="DroidWpfGui.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DroidWpfGui"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        mc:Ignorable="d"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        Title="DROID Desktop GUI" 
+        Height="810" 
+        Width="850"
+        MinHeight="810"
+        MinWidth="850"
+        WindowStartupLocation="CenterScreen">
+    
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- プロンプト入力エリア -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="プロンプト (Prompt) *" 
+                      FontSize="13"
+                      Margin="0,0,0,5"/>
+            <TextBox x:Name="txtPrompt"
+                    Height="120"
+                    TextWrapping="Wrap"
+                    AcceptsReturn="True"
+                    VerticalScrollBarVisibility="Auto"
+                    FontSize="12"/>
+        </StackPanel>
+
+        <!-- オプション設定グループ -->
+        <ui:SimpleStackPanel Grid.Row="1" Margin="0,0,0,10" Spacing="10">
+            <GroupBox Header="オプション設定" Padding="10">
+                <StackPanel>
+                    <!-- 作業ディレクトリ -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="90"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="作業ディレクトリ:" 
+                                  VerticalAlignment="Center"
+                                  FontSize="12"/>
+                        <TextBox x:Name="txtWorkDir" 
+                                Grid.Column="1"
+                                Text="."
+                                VerticalAlignment="Center"
+                                Margin="5,0"
+                                FontSize="12"/>
+                        <Button x:Name="btnBrowseWorkDir"
+                               Grid.Column="2"
+                               Content="参照"
+                               Click="BrowseWorkDir_Click"
+                               FontSize="12"/>
+                    </Grid>
+
+                    <!-- モデル -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="90"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="モデル:" 
+                                  VerticalAlignment="Center"
+                                  FontSize="12"/>
+                        <ComboBox x:Name="cmbModel"
+                                 Grid.Column="1"
+                                 SelectedIndex="1"
+                                 Margin="5,0"
+                                 FontSize="12">
+                            <ComboBoxItem Content="claude-opus-4-5-20251101"/>
+                            <ComboBoxItem Content="claude-sonnet-4-20250514"/>
+                            <ComboBoxItem Content="claude-sonnet-4-5-20241022"/>
+                            <ComboBoxItem Content="claude-haiku-4-20250116"/>
+                        </ComboBox>
+                    </Grid>
+
+                    <!-- 自動化レベル -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="90"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="自動化レベル:" 
+                                  VerticalAlignment="Center"
+                                  FontSize="12"/>
+                        <ComboBox x:Name="cmbAutoLevel"
+                                 Grid.Column="1"
+                                 SelectedIndex="1"
+                                 Margin="5,0"
+                                 FontSize="12">
+                            <ComboBoxItem Content="low"/>
+                            <ComboBoxItem Content="medium"/>
+                            <ComboBoxItem Content="high"/>
+                        </ComboBox>
+                    </Grid>
+
+                    <!-- ログディレクトリ -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="90"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="ログディレクトリ:" 
+                                  VerticalAlignment="Center"
+                                  FontSize="12"/>
+                        <TextBox x:Name="txtLogDir" 
+                                Grid.Column="1"
+                                Text="logs"
+                                VerticalAlignment="Center"
+                                Margin="5,0"
+                                FontSize="12"/>
+                        <Button x:Name="btnBrowseLogDir"
+                               Grid.Column="2"
+                               Content="参照"
+                               Click="BrowseLogDir_Click"
+                               FontSize="12"/>
+                    </Grid>
+
+                    <!-- AGENTS.mdファイル -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="90"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="AGENTS.mdファイル:" 
+                                  VerticalAlignment="Center"
+                                  FontSize="12"/>
+                        <TextBox x:Name="txtAgentsFile" 
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Margin="5,0"
+                                FontSize="12"/>
+                        <Button x:Name="btnBrowseAgentsFile"
+                               Grid.Column="2"
+                               Content="参照"
+                               Click="BrowseAgentsFile_Click"
+                               FontSize="12"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+        </ui:SimpleStackPanel>
+
+        <!-- 参照ファイル/フォルダグループ -->
+        <GroupBox Grid.Row="2" 
+                 Header="参照ファイル/フォルダ" 
+                 Margin="0,0,0,10"
+                 Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                
+                <ListBox x:Name="lstRef"
+                        Grid.Column="0"
+                        Height="140"
+                        FontSize="12"/>
+                
+                <StackPanel Grid.Column="1" 
+                           Margin="10,0,0,0">
+                    <Button x:Name="btnAddFile"
+                           Content="ファイル追加"
+                           Click="AddFile_Click"
+                           Margin="0,0,0,5"
+                           FontSize="12"/>
+                    <Button x:Name="btnAddFolder"
+                           Content="フォルダ追加"
+                           Click="AddFolder_Click"
+                           Margin="0,0,0,5"
+                           FontSize="12"/>
+                    <Button x:Name="btnRemove"
+                           Content="削除"
+                           Click="Remove_Click"
+                           FontSize="12"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- ステータス表示エリア -->
+        <GroupBox Grid.Row="3" 
+                 Header="実行進捗・ステータス" 
+                 Margin="0,0,0,10"
+                 Padding="10">
+            <TextBox x:Name="txtStatus"
+                    Height="120"
+                    Text="待機中"
+                    TextWrapping="Wrap"
+                    AcceptsReturn="True"
+                    VerticalScrollBarVisibility="Auto"
+                    IsReadOnly="True"
+                    FontSize="12"
+                    FontFamily="Consolas"/>
+        </GroupBox>
+
+        <!-- ボタンエリア -->
+        <StackPanel Grid.Row="5" 
+                   Orientation="Horizontal" 
+                   HorizontalAlignment="Right"
+                   Margin="0,10,0,0">
+            <Button x:Name="btnReload"
+                   Content="読み込み"
+                   Width="80"
+                   Click="Reload_Click"
+                   Margin="0,0,10,0"
+                   FontSize="12"/>
+            <Button x:Name="btnSave"
+                   Content="保存"
+                   Width="80"
+                   Click="Save_Click"
+                   Margin="0,0,10,0"
+                   FontSize="12"/>
+            <Button x:Name="btnExecute"
+                   Content="実行"
+                   Width="90"
+                   Click="Execute_Click"
+                   Style="{StaticResource AccentButtonStyle}"
+                   FontSize="12"
+                   FontWeight="Bold"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -30,3 +30,17 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.bak
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+*.nupkg
+.vs/
+DroidWpfGui/bin/
+DroidWpfGui/obj/
