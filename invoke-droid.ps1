@@ -108,19 +108,23 @@ try {
     Push-Location $WorkDir
     
     # UTF-8エンコーディング（BOMなし）でStreamWriterを作成
-    $logStream = [System.IO.StreamWriter]::new($LogFile, $true, $utf8NoBom)
-    
+    $logStream = $null
     try {
+        $logStream = [System.IO.StreamWriter]::new($LogFile, $true, $utf8NoBom)
+        
         # 出力をストリーミング処理しながらコンソールとログファイルに書き込み
         Invoke-Expression $DroidCommand 2>&1 | ForEach-Object {
             $line = $_.ToString()
             Write-Host $line
-            $logStream.WriteLine($line)
+            # Windows標準のCRLFで統一
+            $logStream.Write($line + "`r`n")
         }
     }
     finally {
-        # StreamWriterを確実に破棄
-        $logStream.Dispose()
+        # StreamWriterを確実に破棄（null チェック）
+        if ($null -ne $logStream) {
+            $logStream.Dispose()
+        }
     }
     
     $LogFooter = "`r`n================================================================================"
