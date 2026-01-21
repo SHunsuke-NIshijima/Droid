@@ -3,8 +3,8 @@ using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Diagnostics;
-using Microsoft.Win32;
-using System.Windows.Forms;
+using Win32OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using Forms = System.Windows.Forms;
 using MessageBox = System.Windows.MessageBox;
 
 namespace DroidWpfGui;
@@ -53,13 +53,13 @@ public partial class MainWindow : System.Windows.Window
 
     private void BrowseWorkDir_Click(object sender, RoutedEventArgs e)
     {
-        using var dialog = new FolderBrowserDialog
+        using var dialog = new Forms.FolderBrowserDialog
         {
             Description = "作業ディレクトリを選択",
             SelectedPath = scriptDir
         };
         
-        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        if (dialog.ShowDialog() == Forms.DialogResult.OK)
         {
             txtWorkDir.Text = dialog.SelectedPath;
         }
@@ -67,13 +67,13 @@ public partial class MainWindow : System.Windows.Window
 
     private void BrowseLogDir_Click(object sender, RoutedEventArgs e)
     {
-        using var dialog = new FolderBrowserDialog
+        using var dialog = new Forms.FolderBrowserDialog
         {
             Description = "ログディレクトリを選択",
             SelectedPath = scriptDir
         };
         
-        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        if (dialog.ShowDialog() == Forms.DialogResult.OK)
         {
             txtLogDir.Text = dialog.SelectedPath;
         }
@@ -81,7 +81,7 @@ public partial class MainWindow : System.Windows.Window
 
     private void BrowseAgentsFile_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog
+        var dialog = new Win32OpenFileDialog
         {
             Filter = "Markdown Files (*.md)|*.md|All Files (*.*)|*.*",
             Title = "AGENTS.mdファイルを選択",
@@ -96,7 +96,7 @@ public partial class MainWindow : System.Windows.Window
 
     private void AddFile_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog
+        var dialog = new Win32OpenFileDialog
         {
             Multiselect = true,
             Title = "参照ファイルを選択",
@@ -114,13 +114,13 @@ public partial class MainWindow : System.Windows.Window
 
     private void AddFolder_Click(object sender, RoutedEventArgs e)
     {
-        using var dialog = new FolderBrowserDialog
+        using var dialog = new Forms.FolderBrowserDialog
         {
             Description = "参照フォルダを選択",
             SelectedPath = scriptDir
         };
         
-        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        if (dialog.ShowDialog() == Forms.DialogResult.OK)
         {
             lstRef.Items.Add(dialog.SelectedPath);
         }
